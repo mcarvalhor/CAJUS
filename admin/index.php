@@ -23,7 +23,9 @@ if($_GET["action"] == "delete") {
 }
 
 
-$links = dbFetchAll("SELECT id, name, type, bot_index, access_count, SUBSTR(content, 0, ?) AS content FROM " . DB_PREFIX . "slugs WHERE LOWER(name) != LOWER(?) ORDER BY access_count DESC, name, id;", [ CNS_MAXURLLENGTH, "index" ]);
+$links = dbFetchAll("SELECT id, name, type, bot_index, access_count, content FROM " . DB_PREFIX . "slugs WHERE LOWER(name) != LOWER(:index) AND (type = :redirect OR type = :iframe)"
+	. "UNION SELECT id, name, type, bot_index, access_count, content FROM " . DB_PREFIX . "slugs WHERE LOWER(name) != LOWER(:index) AND type != :redirect AND type != :iframe ORDER BY access_count DESC, name, id;",
+	[ ":index" => "index", "redirect" => "redirect", ":iframe" => "iframe" ]);
 $deleteNonce = getNonce("delete", FALSE, max(1, min(32, count($links))));
 $logoutNonce = getNonce("logout");
 
