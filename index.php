@@ -6,7 +6,7 @@ disableCache();
 
 $slugName = $_GET["s"];
 
-if(empty($slugName) && preg_match("/([a-zA-Z0-9\-\_\.]+)$/", $_SERVER["REQUEST_URI"], $slugNameMatches)) {
+if(empty($slugName) && preg_match("/([a-zA-Z0-9\-\_\.]+|" . preg_quote(CNS_SHORTENERPREFIX) . "[a-zA-Z0-9\-\_\.]+)(?:[\?\#].*)?$/", $_SERVER["REQUEST_URI"], $slugNameMatches)) {
 	$slugName = $slugNameMatches[1];
 }
 

@@ -32,8 +32,8 @@ if($_POST["action"] == "shorten") {
 			if($exists !== FALSE && !empty($exists["id"])) {
 				continue;
 			}
-			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) SELECT ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM " . DB_PREFIX . "slugs WHERE LOWER(name) = LOWER(?));",
-				[ $name, "redirect", $url, NULL, NULL, 0, 0, $name ]);
+			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) VALUES(?, ?, ?, ?, ?, ?, ?);",
+				[ $name, "redirect", $url, NULL, NULL, 0, 0 ]);
 			break;
 		}
 		if($i >= $max) {
