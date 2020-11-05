@@ -68,8 +68,8 @@ if($_POST["action"] == "slug") {
 		$index = ($index == "true") ? 1:0;
 		$accessCount = ($accessCount == "true") ? 0:NULL;
 		if($type == "redirect" || $type == "iframe") {
-			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) SELECT ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM " . DB_PREFIX . "slugs WHERE LOWER(name) = LOWER(?));",
-				[ $name, $type, $url, NULL, NULL, $index, $accessCount, $name ]);
+			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) VALUES(?, ?, ?, ?, ?, ?, ?);",
+				[ $name, $type, $url, NULL, NULL, $index, $accessCount ]);
 		} else {
 			// TODO: more efficient solution to upload to DB.
 			$extension = pathinfo($file["name"], PATHINFO_EXTENSION);
@@ -82,8 +82,8 @@ if($_POST["action"] == "slug") {
 			if(empty($mime) || strlen($mime) > 255) {
 				$mime = "application/octet-stream";
 			}
-			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) SELECT ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM " . DB_PREFIX . "slugs WHERE LOWER(name) = LOWER(?));",
-				[ $name, $type, $fileContent, $mime, $extension, $index, $accessCount, $name ]);
+			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) VALUES(?, ?, ?, ?, ?, ?, ?);",
+				[ $name, $type, $fileContent, $mime, $extension, $index, $accessCount ]);
 		}
 		$showForm = FALSE;
 	}

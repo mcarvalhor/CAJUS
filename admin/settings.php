@@ -30,8 +30,8 @@ if($_POST["action"] == "save-index") {
 	} else {
 		dbQuery("DELETE FROM " . DB_PREFIX . "slugs WHERE LOWER(name) = LOWER(?);", [ "index" ]);
 		if(!empty($url)) {
-			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) SELECT ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM " . DB_PREFIX . "slugs WHERE LOWER(name) = LOWER(?));",
-				[ "index", "redirect", $url, NULL, NULL, 0, NULL, "index" ]);
+			dbQuery("INSERT INTO " . DB_PREFIX . "slugs(name, type, content, mime, extension, bot_index, access_count) VALUES(?, ?, ?, ?, ?, ?, ?);",
+				[ "index", "redirect", $url, NULL, NULL, 0, NULL ]);
 		}
 		header("Location: ?");
 		exit(0);
