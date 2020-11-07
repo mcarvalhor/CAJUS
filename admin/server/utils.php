@@ -220,7 +220,7 @@ function getCaptcha(string $nonce) {
 	if(!startSession()) {
 		return FALSE;
 	}
-	$newCaptcha = getRandomString(4, 8, array_merge(range('A', 'Z'), range('a', 'z'), range('2', '9')));
+	$newCaptcha = getRandomString(4, 8, array_merge(range('A', 'N'), range('P', 'Z'), range('a', 'n'), range('p', 'z'), range('2', '9')));
 	$newSeed = mt_rand();
 	if(empty($_SESSION["captcha"]) || count($_SESSION["captcha"]) >= 128) {
 		$_SESSION["captcha"] = [ ];
