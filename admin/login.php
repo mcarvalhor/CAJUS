@@ -42,25 +42,65 @@ if($_GET["action"] == "login") {
 		exit(0);
 	}
 	// Criar imagem.
-	$imgBuilder = imagecreate(150, 20);
+	$width = 300;
+	$height = 100;
+	$fontSize = 25;
+	$fontFile = "./server/UbuntuMono-Regular.ttf";
+	$imgBuilder = imagecreate($width, $height);
 	// Ativar semente única para imagem.
 	mt_srand($seed);
 	// Define cores
-	//$imgBg = imagecolorallocate($imgBuilder, mt_rand(150, 255), mt_rand(150, 255), mt_rand(150, 255));
-	//$imgFg = imagecolorallocate($imgBuilder, mt_rand(0, 100), mt_rand(0, 100), mt_rand(0, 100));
 	$imgBg = imagecolorallocate($imgBuilder, 255, 255, 255);
 	$imgFg = imagecolorallocate($imgBuilder, 0, 0, 0);
+	$rand_float = function($min, $max) {
+		return ($max - $min) * (mt_rand() / mt_getrandmax()) + $min;
+	};
 	// Preenche com o plano de fundo.
 	imagefill($imgBuilder, 0, 0, $imgBg);
 	// Escreve a string do texto.
-	imagestring($imgBuilder, 5, mt_rand(3, max(4, (int) (150 - strlen($text) * 10))), mt_rand(1, 4), $text, $imgFg);
-	// Escreve linhas na imagem, de forma a dificultar captcha.
-	$nLines = mt_rand(3, 5);
-	for($i = 0; $i < $nLines; $i++) {
-		imageline($imgBuilder, mt_rand(0, 40), mt_rand(0, 20), mt_rand(130, 150), mt_rand(0, 20), $imgFg);
+	$x = $rand_float($fontSize*0.25, $fontSize*0.75);
+	$y = $rand_float($fontSize + $fontSize/2, $height - $fontSize/2);
+	for($i = 0; $i < strlen($text); $i++) {
+		$angle = $rand_float(-30, +30);
+		imagettftext($imgBuilder, $fontSize, $angle, $x + $rand_float(-5, +5), $y + $rand_float(-$fontSize*0.25, $fontSize*0.25), $imgFg, $fontFile, $text[$i]);
+		$x += ($width - $fontSize)/strlen($text);
 	}
-	// Aplicar filtragem à imagem.
-	//imagefilter($imgBuilder, IMG_FILTER_GRAYSCALE);
+	// Desenha linhas/retângulos/elipses/arcos na imagem, de forma a dificultar captcha.
+	$nLines = mt_rand(3, 6);
+	for($i = 0; $i < $nLines; $i++) {
+		switch(rand(0, 3)) {
+			case 0: // Line.
+				$x1 = $rand_float($fontSize*0.25, $fontSize*0.75);
+				$y1 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				$x2 = $rand_float($width - $fontSize*0.75, $width - $fontSize*0.25);
+				$y2 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				imageline($imgBuilder, $x1, $y1, $x2, $y2, $imgFg);
+			break;
+			case 1: // Rectangle.
+				$x1 = $rand_float($fontSize*0.75, $width - $fontSize*0.25);
+				$y1 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				$x2 = $rand_float($fontSize*0.75, $width - $fontSize*0.25);
+				$y2 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				imagerectangle($imgBuilder, $x1, $y1, $x2, $y2, $imgFg);
+			break;
+			case 2: // Ellipse.
+				$x1 = $rand_float($fontSize*0.75, $width - $fontSize*0.25);
+				$y1 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				$w1 = $rand_float($width*0.125, $width*0.75);
+				$h1 = $rand_float($height*0.125, $height*0.75);
+				imageellipse($imgBuilder, $x1, $y1, $w1, $h1, $imgFg);
+			break;
+			case 3: // Arc.
+				$x1 = $rand_float($fontSize*0.75, $width - $fontSize*0.25);
+				$y1 = $y + $rand_float(-$fontSize, $fontSize*0.25);
+				$w1 = $rand_float($width*0.125, $width*0.75);
+				$h1 = $rand_float($height*0.125, $height*0.75);
+				$a1 = $rand_float(0, 360);
+				$a2 = $a1 + $rand_float(60, 180);
+				imagearc($imgBuilder, $x1, $y1, $w1, $h1, $a1, $a2, $imgFg);
+			break;
+		}
+	}
 	// Retorna conteúdo da imagem.
 	header("Content-Type: image/png");
 	imagepng($imgBuilder);
